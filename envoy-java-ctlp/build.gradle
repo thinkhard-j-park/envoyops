@@ -12,7 +12,7 @@ plugins {
 }
 
 group = 'org.envoyops'
-version = "${envoyopsVersion}"
+version = "${envoyControlPlaneVersion}"
 
 
 java {
