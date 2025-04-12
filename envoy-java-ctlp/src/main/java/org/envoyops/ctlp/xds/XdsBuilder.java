@@ -89,7 +89,7 @@ public class XdsBuilder {
 			JsonFormat.parser().usingTypeRegistry(this.typeRegistry).merge(json, builder);
 		}
 		catch (InvalidProtocolBufferException ex) {
-			throw new IllegalArgumentException("invalid 'RouteConfiguration' json", ex);
+			throw new IllegalArgumentException("invalid 'ClusterLoadAssignment' json", ex);
 		}
 
 		return builder.build();
