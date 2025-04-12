@@ -1,2 +1,2 @@
 test:
-  envoy-control-plane-url: http://locoalhost:30010
+  envoy-control-plane-url: http://localhost:30010

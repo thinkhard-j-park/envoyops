@@ -12,7 +12,7 @@ public class ControlPlaneLocalTests extends AbstractControlPlaneTests {
 
 	@Test
 	void checkProperties() {
-		assertThat(this.testProperties.getEnvoyControlPlaneUrl()).isEqualTo("http://locoalhost:30010");
+		assertThat(this.testProperties.getEnvoyControlPlaneUrl()).isEqualTo("http://localhost:30010");
 	}
 
 	@Test
