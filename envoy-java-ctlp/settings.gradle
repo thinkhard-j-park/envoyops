@@ -1,0 +1,16 @@
+pluginManagement {
+	repositories {
+		mavenCentral()
+		gradlePluginPortal()
+	}
+
+	plugins {
+		id 'org.springframework.boot' version "${springBootVersion}"
+		id 'io.spring.javaformat' version "${springJavaFormatVersion}"
+		id 'com.google.cloud.tools.jib' version "${jibPluginVersion}"
+		id 'com.google.protobuf' version "${protobufPluginVersion}"
+	}
+}
+
+rootProject.name = 'envoy-java-ctlp'
+

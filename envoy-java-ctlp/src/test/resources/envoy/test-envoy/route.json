@@ -1,0 +1,51 @@
+{
+  "name": "sample-route-config",
+  "virtual_hosts": [
+    {
+      "name": "sample",
+      "domains": [
+        "api-sample.sample.com",
+        "api-global-sample.sample.com"
+      ],
+      "cors": {
+        "allow_origin_string_match": [
+          {
+            "safe_regex": {
+              "google_re2": {},
+              "regex": ".*"
+            }
+          }
+        ],
+        "allow_headers": "content-type",
+        "allow_methods": "OPTIONS, GET, PUT, POST, DELETE",
+        "allow_credentials": true,
+        "max_age": "3600"
+      },
+      "typed_per_filter_config": {
+        "envoy.filters.http.ext_authz": {
+          "@type": "type.googleapis.com/envoy.extensions.filters.http.ext_authz.v3.ExtAuthzPerRoute",
+          "disabled": true
+        }
+      },
+      "routes": [
+        {
+          "name": "sample-route",
+          "match": {
+            "safe_regex": {
+              "regex": "/(x|y|z)/(xx|yy|zz)/.*"
+            }
+          },
+          "route": {
+            "regex_rewrite": {
+              "pattern": {
+                "regex": "/(x|y|z)/(.*).json"
+              },
+              "substitution": "/\\1/\\2"
+            },
+            "cluster": "sample-cluster"
+          }
+        }
+      ]
+    }
+  ]
+}

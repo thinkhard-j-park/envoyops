@@ -1,0 +1,14 @@
+spring:
+  main:
+    web-application-type: none
+  data:
+    redis:
+      client-type: lettuce
+armeria:
+  enable-metrics: false
+  ports:
+    - port: 30010
+envoyctlp:
+  topic: envoy-control
+
+

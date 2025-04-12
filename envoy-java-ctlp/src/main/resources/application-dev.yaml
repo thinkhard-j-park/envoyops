@@ -1,0 +1,5 @@
+spring:
+  data:
+    redis:
+      host: redis.default.svc.cluster.local.
+      port: 30011
