@@ -7,12 +7,12 @@ import org.springframework.test.context.ActiveProfiles;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@ActiveProfiles("local")
-public class ControlPlaneLocalTests extends AbstractControlPlaneTests {
+@ActiveProfiles("dev")
+public class ControlPlaneDevTests extends AbstractControlPlaneTests {
 
 	@Test
 	void checkProperties() {
-		assertThat(this.testProperties.getEnvoyControlPlaneUrl()).isEqualTo("http://localhost:30010");
+		assertThat(this.testProperties.getEnvoyControlPlaneUrl()).isEqualTo("http://192.168.0.14:30010");
 	}
 
 	@Test

@@ -55,7 +55,7 @@ spec:
     spec:
       containers:
         - name: app
-          image: ghcr.io/thinkhard-j-park/envoy-java-ctlp:1.0.0-SNAPSHOT.2025-02-23-13-22-54
+          image: ghcr.io/thinkhard-j-park/envoy-java-ctlp:1.0.0-SNAPSHOT.2025-04-13-00-56-00
           ports:
             - name: app-port
               containerPort: 30010
