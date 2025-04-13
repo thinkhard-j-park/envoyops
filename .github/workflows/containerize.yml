@@ -48,6 +48,6 @@ jobs:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
       - name: Publish container  ${{ matrix.project }}
-        run: ./gradlew :${{ matrix.project }}:jib
+        run: ./gradlew :jib
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

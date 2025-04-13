@@ -60,7 +60,8 @@ public final class HttpClient {
 		String osName = System.getProperty("os.name");
 		String osVersion = System.getProperty("os.version");
 		String javaVersion = System.getProperty("java.version");
-		return String.format("%s/%s (%s; %s) Java/%s", clientName, "envoy-java-control-plane-test", osName, osVersion, javaVersion);
+		return String.format("%s/%s (%s; %s) Java/%s", clientName, "envoy-java-control-plane-test", osName, osVersion,
+				javaVersion);
 	}
 
 	public static RestClient restClient(String clientName, String baseUrl) {
