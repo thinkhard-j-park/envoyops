@@ -10,6 +10,9 @@ on:
   pull_request:
     branches: # Specify your branches here
       - develop
+  push:
+    branches:
+      - develop
   release:
     types: [created]
 
