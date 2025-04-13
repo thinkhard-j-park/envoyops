@@ -1,0 +1,117 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: envoy-java-ctlp
+  namespace: default
+  labels:
+    app: envoy-java-ctlp
+spec:
+  type: NodePort
+  ports:
+    - port: 80
+      targetPort: 30010
+      nodePort: 30010
+      protocol: TCP
+  selector:
+    app: envoy-java-ctlp
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: envoy-java-ctlp-headless
+  namespace: default
+  labels:
+    app: envoy-java-ctlp
+spec:
+  type: ClusterIP
+  clusterIP: None
+  ports:
+    - port: 30010
+      targetPort: 30010
+      protocol: TCP
+  selector:
+    app: envoy-java-ctlp
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: envoy-java-ctlp
+  namespace: default
+spec:
+  minReadySeconds: 10
+  revisionHistoryLimit: 3
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: "50%"
+  selector:
+    matchLabels:
+      app: envoy-java-ctlp
+  template:
+    metadata:
+      labels:
+        app: envoy-java-ctlp
+        service: envoy-java-ctlp
+    spec:
+      containers:
+        - name: app
+          image: ghcr.io/thinkhard-j-park/envoy-java-ctlp:1.0.0-SNAPSHOT.2025-02-23-13-22-54
+          ports:
+            - name: app-port
+              containerPort: 30010
+          resources:
+            requests:
+              memory: "1Gi"
+              cpu: "1"
+            limits:
+              memory: "1Gi"
+              cpu: "1"
+          workingDir: /usr/local/app
+          args: [ "--spring.profiles.active=dev" ]
+          env:
+            - name: JAVA_TOOL_OPTIONS
+              value: -Xms700M -Xmx700M
+          readinessProbe:
+            grpc:
+              port: 30010
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            timeoutSeconds: 60
+            failureThreshold: 2000
+          livenessProbe:
+            grpc:
+              port: 30010
+            initialDelaySeconds: 120
+            periodSeconds: 120
+            timeoutSeconds: 60
+          volumeMounts:
+            - name: logs
+              mountPath: /usr/local/app/logs
+      imagePullSecrets:
+        - name: github-package
+      volumes:
+        - name: logs
+          emptyDir: { }
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: profile
+                    operator: In
+                    values:
+                      - app
+---
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: envoy-java-ctlp
+  namespace: default
+spec:
+  minReplicas: 1
+  maxReplicas: 1
+  targetCPUUtilizationPercentage: 60
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: envoy-java-ctlp

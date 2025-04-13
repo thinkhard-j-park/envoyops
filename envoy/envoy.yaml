@@ -1,0 +1,135 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: envoy
+  namespace: default
+  labels:
+    app: envoy
+spec:
+  type: NodePort
+  ports:
+    - port: 30012
+      targetPort: 30012
+      nodePort: 30012
+      protocol: TCP
+  selector:
+    app: envoy
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: test-envoy-config
+data:
+  envoy.yaml: |
+    node:
+      cluster: default
+      id: test-envoy-config
+    dynamic_resources:
+      lds_config:
+        api_config_source:
+          api_type: GRPC
+          grpc_services:
+            - envoy_grpc:
+                cluster_name: xds_cluster
+      cds_config:
+        api_config_source:
+          api_type: GRPC
+          grpc_services:
+            - envoy_grpc:
+                cluster_name: xds_cluster
+    static_resources:
+      clusters:
+        - name: xds_cluster
+          connect_timeout: 0.25s
+          type: STRICT_DNS
+          typed_extension_protocol_options:
+            envoy.extensions.upstreams.http.v3.HttpProtocolOptions:
+              "@type": type.googleapis.com/envoy.extensions.upstreams.http.v3.HttpProtocolOptions
+              explicit_http_config:
+                http2_protocol_options:
+                  # Configure an HTTP/2 keep-alive to detect connection issues and reconnect
+                  # to the admin server if the connection is no longer responsive.
+                  connection_keepalive:
+                    interval: 30s
+                    timeout: 5s
+          load_assignment:
+            cluster_name: xds_cluster
+            endpoints:
+              - lb_endpoints:
+                  - endpoint:
+                      address:
+                        socket_address:
+                          address: envoy-java-ctlp-headless.default.svc.cluster.local.
+                          port_value: 30010
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: envoy
+  namespace: default
+spec:
+  minReadySeconds: 10
+  revisionHistoryLimit: 3
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: "50%"
+  selector:
+    matchLabels:
+      app: envoy
+  template:
+    metadata:
+      labels:
+        app: envoy
+        service: envoy
+    spec:
+      containers:
+        - name: app
+          image: envoyproxy/envoy:v1.33-latest
+          ports:
+            - name: app-port
+              containerPort: 30012
+          resources:
+            requests:
+              memory: "1Gi"
+              cpu: "1"
+            limits:
+              memory: "1Gi"
+              cpu: "1"
+          workingDir: /usr/local/app
+          volumeMounts:
+            - name: logs
+              mountPath: /usr/local/app/logs
+            - name: envoy-config
+              mountPath: /etc/envoy/envoy.yaml
+              subPath: envoy.yaml
+      volumes:
+        - name: logs
+          emptyDir: { }
+        - name: envoy-config
+          configMap:
+            name: test-envoy-config
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: profile
+                    operator: In
+                    values:
+                      - app
+---
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: envoy
+  namespace: default
+spec:
+  minReplicas: 1
+  maxReplicas: 1
+  targetCPUUtilizationPercentage: 60
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: envoy
+
