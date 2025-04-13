@@ -26,6 +26,9 @@ jobs:
       matrix:
         project:
           - envoy-java-ctlp
+    defaults:
+      run:
+        working-directory: ${{ matrix.project }}
 
     steps:
       - uses: actions/checkout@v4
