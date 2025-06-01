@@ -2,6 +2,7 @@ package org.envoyops.ctlp.config;
 
 import com.linecorp.armeria.server.docs.DocService;
 import com.linecorp.armeria.server.grpc.GrpcService;
+import com.linecorp.armeria.server.logging.AccessLogWriter;
 import com.linecorp.armeria.server.logging.LoggingService;
 import com.linecorp.armeria.spring.ArmeriaServerConfigurator;
 import io.envoyproxy.controlplane.cache.v3.SimpleCache;
@@ -16,6 +17,8 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties(ControlPlaneProperties.class)
 @Configuration
 public class ControlPlaneServerConfig {
+
+	private static final String ACCESS_LOG_FORMAT = "%{ISO_OFFSET_DATE_TIME}t %h %r %s %{grpc-status}o %b %{totalDurationMillis}L %{x-b3-traceid}i %{x-b3-spanid}i %{Referer}i %{User-Agent}i";
 
 	@Bean
 	public SimpleCache<String> snapshotCache() {
@@ -43,6 +46,16 @@ public class ControlPlaneServerConfig {
 			serverBuilder.service(grpcService, LoggingService.newDecorator());
 			serverBuilder.annotatedService("/ctlp", controlPlaneService);
 			serverBuilder.serviceUnder("/docs", new DocService());
+			serverBuilder.accessLogWriter(accessLogWriter(), true);
+		};
+	}
+
+	private AccessLogWriter accessLogWriter() {
+		return (requestLog) -> {
+			if (requestLog.context().path().startsWith("/grpc.health.v1.Health/")) {
+				return;
+			}
+			AccessLogWriter.custom(ACCESS_LOG_FORMAT).log(requestLog);
 		};
 	}
 

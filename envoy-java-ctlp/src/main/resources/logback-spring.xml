@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="base.xml"/>
+    <logger name="com.linecorp.armeria.logging.access" level="INFO" additivity="false">
+        <appender-ref ref="ACCESS_LOG_FILE"/>
+    </logger>
+
+    <root level="INFO">
+        <appender-ref ref="ASYNC_FILE"/>
+        <appender-ref ref="CONSOLE"/>
+    </root>
+
+    <springProfile name="local">
+        <logger name="org.springframework" level="INFO" additivity="false"/>
+    </springProfile>
+
+    <springProfile name="dev">
+        <logger name="org.springframework" level="WARN" additivity="false"/>
+        <logger name="org.envoyops" level="INFO" additivity="false"/>
+        <root level="WARN"/>
+    </springProfile>
+</configuration>

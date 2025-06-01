@@ -10,5 +10,3 @@ armeria:
     - port: 30010
 envoyctlp:
   topic: envoy-control
-
-
