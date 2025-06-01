@@ -90,11 +90,11 @@ spec:
               containerPort: 30012
           resources:
             requests:
-              memory: "1Gi"
-              cpu: "1"
+              memory: "500Mi"
+              cpu: "0.5"
             limits:
-              memory: "1Gi"
-              cpu: "1"
+              memory: "500Mi"
+              cpu: "0.5"
           workingDir: /usr/local/app
           volumeMounts:
             - name: logs
