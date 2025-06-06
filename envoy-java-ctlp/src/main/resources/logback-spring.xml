@@ -11,12 +11,12 @@
     </root>
 
     <springProfile name="local">
-        <logger name="org.springframework" level="INFO" additivity="false"/>
+        <logger name="org.springframework" level="INFO"/>
     </springProfile>
 
     <springProfile name="dev">
-        <logger name="org.springframework" level="WARN" additivity="false"/>
-        <logger name="org.envoyops" level="INFO" additivity="false"/>
+        <logger name="org.springframework" level="WARN"/>
+        <logger name="org.envoyops" level="INFO"/>
         <root level="WARN"/>
     </springProfile>
 </configuration>
