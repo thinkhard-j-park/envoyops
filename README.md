@@ -22,7 +22,7 @@ Envoy 와 java 진영에서 많이 사용되는 Spring Cloud Gateway Webflux와 
 1 iteration에 다음 3가지 요청을 수행한다.
 - 클라이언트에서는 Jwt 토큰을 발급받는다.
 - 클라이언트에서는 발급받은 토큰과 함께 Post 요청 1개을 수행한다.
-- 클라이언트에서는 발급받는 토큰과 함께 Get 요청 1개를 수행한다. 
+- 클라이언트에서는 발급받은 토큰과 함께 Get 요청 1개를 수행한다. 
 
 Gateway 에서는 jwks 을 요청하여 캐시하고 있고, Jwt 토큰을 jwks의 public key로 검증한다. 토큰이 올바른 경우 upstream 으로 요청을 전달한다.
 
